@@ -6,7 +6,7 @@
 
 (defn normalize-nsbp-raquo [s] (clojure.string/replace (clojure.string/replace s "&nbsp;" " ") "&raquo;" "heyheyhey"))
 (defn normalize-multilang-definitions [s] (clojure.string/replace s #"<span class=\"(german|french|italian|spanish)\">[^>]*</span>" ""))
-(defn normalize-wrap-in-html [s] (str "<html>" s "</html>"))
+(defn normalize-wrap-in-html [s] (str "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"><html>" s "</html>"))
 
 (def fully-normal (comp normalize-wrap-in-html normalize-nsbp-raquo normalize-multilang-definitions))
 

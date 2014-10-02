@@ -11,6 +11,7 @@
 		 [org.xerial/sqlite-jdbc "3.7.2"]
 		 [factual/clj-leveldb "0.1.0"]
 		 [hiccup "1.0.5"]
+		 [net.sf.jtidy/jtidy "r938"]
 		 [com.jolbox/bonecp "0.7.1.RELEASE"]
 		 [org.slf4j/slf4j-log4j12 "1.5.0"]
 		 [org.apache.santuario/xmlsec "2.0.0"]
