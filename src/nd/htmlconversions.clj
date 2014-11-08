@@ -10,10 +10,10 @@
       (h/h (de :head))
       [:span.parts (h/h (de :tail))]]
     [:span.english (h/h (de :definition))]
-    #_[:span.german  (h/h (de :definition_german))]
-    #_[:span.french  (h/h (de :definition_french))]
-    #_[:span.italian (h/h (de :definition_italian))]
-    #_[:span.spanish (h/h (de :definition_spanish))]])
+    [:span.german  (h/h (de :definition_german))]
+    [:span.french  (h/h (de :definition_french))]
+    [:span.italian (h/h (de :definition_italian))]
+    [:span.spanish (h/h (de :definition_spanish))]])
 
 (defn dictionary-entry-v-value [de]
   (let [frequency (+ 1 (quot (de :global_popularity) 2000))
@@ -130,12 +130,8 @@
 					    ") and user_id in (0,?)") user_id])
         hlemmatizations (reduce #(merge-with concat %1 %2) {} (map (fn [lem] {(lem :lemmatizable_word) (list (lem :dictionary_entry_id)) }) lemmatizations))
 	deids (set (apply concat (vals hlemmatizations)))
-	dictionary-entries (jdbc/query db [(str "select id, head, tail, definition, global_popularity, "
-			   	       	  	"coalesce(definition_german, machine_definition_german) as definition_german, "
-						"coalesce(definition_french, machine_definition_french) as definition_french, "
-						"coalesce(definition_italian, machine_definition_italian) as definition_italian, "
-						"coalesce(definition_spanish, machine_definition_spanish) as definition_spanish "
-						" from dictionary_entries where id in ("
+	dictionary-entries (jdbc/query db [(str "select id, head, tail, definition, global_popularity, definition_german, definition_french, definition_italian, definition_spanish"
+						" from merged_dictionary_entries where id in ("
 			   	       	  	  (clojure.string/join "," deids)
 			   	       	  	")")])
 	hdictionary-entries (reduce merge {} (map (fn [de] {(de :id) de}) dictionary-entries))

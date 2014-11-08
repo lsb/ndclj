@@ -15,4 +15,5 @@
 		 [com.jolbox/bonecp "0.7.1.RELEASE"]
 		 [org.slf4j/slf4j-log4j12 "1.5.0"]
 		 [org.apache.santuario/xmlsec "2.0.0"]
+		 [xmlunit/xmlunit "1.5"]
                  ])

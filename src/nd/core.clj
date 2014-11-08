@@ -1,5 +1,5 @@
 (ns nd.core
-  (:require nd.db clojure.java.jdbc nd.htmlconversions nd.legacy)
+  (:require nd.db clojure.java.jdbc nd.htmlconversions)
 )
 
 
