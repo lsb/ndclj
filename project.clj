@@ -6,10 +6,9 @@
   :main nd.core
   :aot :all
   :profiles {:test {:resource-paths ["resources-test"]}}
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
   		 [org.clojure/java.jdbc "0.3.3"]
-		 [org.xerial/sqlite-jdbc "3.7.2"]
-		 [factual/clj-leveldb "0.1.0"]
+		 [org.xerial/sqlite-jdbc "3.8.11.2"]
 		 [hiccup "1.0.5"]
 		 [net.sf.jtidy/jtidy "r938"]
 		 [com.jolbox/bonecp "0.7.1.RELEASE"]

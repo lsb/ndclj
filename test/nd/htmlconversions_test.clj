@@ -1,6 +1,5 @@
 (ns nd.htmlconversions-test
   (:require [clojure.test :refer :all]
-  	    [clj-leveldb]
 	    [clojure.java.jdbc]
 	    [nd.db :as db]
 	    [clojure.java.io :as io]
@@ -8,22 +7,23 @@
 
 (deftest backwards-compatibility
   (testing "Every Clojure passage should be rendered as it had rendered in Ruby."
-    (let [sqldb (db/db-pool-of-n 1 (.getFile (io/resource "old-rb-db/nd.db")))
-          htmldb (clj-leveldb/create-db (io/resource "old-rb-passages") {})
-	  tsdb (org.custommonkey.xmlunit.TolerantSaxDocumentBuilder. (org.custommonkey.xmlunit.XMLUnit/getTestParser))
-	  hdb (org.custommonkey.xmlunit.HTMLDocumentBuilder. tsdb)
-	  ]
-      (clojure.java.jdbc/execute! sqldb [(str "attach '" (.getPath (io/resource "old-rb-db/mde.db")) "' as m")] :transaction? false)
+    (let [sqldb (db/db-pool-of-n 32 (.getFile (io/resource "old-rb-db/nd.db")))
+          htmldb (db/db-pool-of-n 32 (.getFile (io/resource "old-rb-passages.db")))
       (doall
-        (map
+        (pmap
           (fn [i]
-	    (let [rbstr (String. (clj-leveldb/get htmldb i))
+	    (let [rbstr (:html (first (clojure.java.jdbc/query htmldb ["select html from htmls where id = ?" i])))
                   cljstr (String. (nd.htmlconversions/subpassageid-to-html sqldb (Integer. i)))
-                  rbd (.parse hdb (.replaceAll rbstr "\r" " "))
-                  cljd (.parse hdb (.replaceAll cljstr "\r" " "))
-                  diff (org.custommonkey.xmlunit.Diff. rbd cljd)]
-	      (if (not (.similar diff)) (println diff) (spit "/dev/stderr" "."))
-	      (is (.similar diff))))
-	  (map (fn [[k v]] (String. k)) (clj-leveldb/iterator htmldb))
+                  tsdb1 (org.custommonkey.xmlunit.TolerantSaxDocumentBuilder. (org.custommonkey.xmlunit.XMLUnit/getTestParser))
+                  hdb1 (org.custommonkey.xmlunit.HTMLDocumentBuilder. tsdb1)
+                  tsdb2 (org.custommonkey.xmlunit.TolerantSaxDocumentBuilder. (org.custommonkey.xmlunit.XMLUnit/getTestParser))
+                  hdb2 (org.custommonkey.xmlunit.HTMLDocumentBuilder. tsdb2)
+                  rbd (.parse hdb1 (.replaceAll rbstr "\r" " "))
+                  cljd (.parse hdb2 (.replaceAll cljstr "\r" " "))
+                  diff (org.custommonkey.xmlunit.Diff. rbd cljd)
+                  similar (.similar diff)]
+	      (spit "/dev/stderr" (if similar "." diff))
+	      (is similar)))
+	  (map :id (clojure.java.jdbc/query htmldb ["select id from htmls"]))
         )))))
 
