@@ -8,7 +8,7 @@
 (deftest backwards-compatibility
   (testing "Every Clojure passage should be rendered as it had rendered in Ruby."
     (let [sqldb (db/db-pool-of-n 32 (.getFile (io/resource "old-rb-db/nd.db")))
-          htmldb (db/db-pool-of-n 32 (.getFile (io/resource "old-rb-passages.db")))
+          htmldb (db/db-pool-of-n 32 (.getFile (io/resource "old-rb-passages.db")))]
       (doall
         (pmap
           (fn [i]
@@ -24,6 +24,4 @@
                   similar (.similar diff)]
 	      (spit "/dev/stderr" (if similar "." diff))
 	      (is similar)))
-	  (map :id (clojure.java.jdbc/query htmldb ["select id from htmls"]))
-        )))))
-
+	  (map :id (clojure.java.jdbc/query htmldb ["select id from htmls"])))))))
